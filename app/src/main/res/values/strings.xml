@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Calculator</string>
+
+    <string name="preference_file_key" translatable="false">com.osmanabdelsalam.calculator2app.PREFERENCE_FILE_KEY</string>
+    <string name="last_equation_value" translatable="false">LAST_EQUATION_VALUE</string>
+
+    <!-- numbers -->
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <!-- /numbers -->
+
+    <!-- operations -->
+    <string name="add" translatable="false">+</string>
+    <string name="subtract" translatable="false">-</string>
+    <string name="divide" translatable="false">/</string>
+    <string name="multiply" translatable="false">X</string>
+    <!-- operations -->
+
+    <string name="equal" translatable="false">=</string>
+    <string name="ac" translatable="false">AC</string>
+    <string name="dot" translatable="false">.</string>
+    <string name="history">History</string>
+    <string name="clear">Clear</string>
+    <string name="history_list_hint">Swipe Right To Delete, Left To Use Item.</string>
+    <string name="backspace">backspace</string>
+    <string name="error">Error</string>
+</resources>

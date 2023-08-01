@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.main.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvNumbers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/orbitron"
+            android:scrollbars="vertical"
+            android:textSize="35sp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="20dp"
+            tools:ignore="NestedWeights" />
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scrollbars="vertical"
+            android:layout_weight="1"
+            android:fontFamily="@font/orbitron"
+            android:textSize="35sp"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="20dp" />
+    </LinearLayout>
+    
+    <LinearLayout
+        style="@style/buttonRow">
+
+        <Button
+            android:id="@+id/btnClear"
+            style="@style/buttonOperation"
+            android:text="@string/ac" />
+        <ImageView
+            android:id="@+id/btnBackspace"
+            style="@style/buttonOperation"
+            android:contentDescription="@string/backspace"
+            android:src="@drawable/baseline_backspace_24_2"
+            android:padding="40dp"
+            />
+
+        <Button
+            android:id="@+id/btnDisabled"
+            style="@style/buttonOperation"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <Button
+            android:id="@+id/btnOprDivide"
+            style="@style/buttonOperation"
+            android:text="@string/divide" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+
+        <Button
+            android:id="@+id/btnNum7"
+            style="@style/buttonNumber"
+            android:text="@string/seven" />
+
+        <Button
+            android:id="@+id/btnNum8"
+            style="@style/buttonNumber"
+            android:text="@string/eight" />
+
+        <Button
+            android:id="@+id/btnNum9"
+            style="@style/buttonNumber"
+            android:text="@string/nine" />
+
+        <Button
+            android:id="@+id/btnOprMultiply"
+            style="@style/buttonOperation"
+            android:text="@string/multiply" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+
+        <Button
+            android:id="@+id/btnNum4"
+            style="@style/buttonNumber"
+            android:text="@string/four" />
+
+        <Button
+            android:id="@+id/btnNum5"
+            style="@style/buttonNumber"
+            android:text="@string/five" />
+
+        <Button
+            android:id="@+id/btnNum6"
+            style="@style/buttonNumber"
+            android:text="@string/six" />
+
+        <Button
+            android:id="@+id/btnOprSubtract"
+            style="@style/buttonOperation"
+            android:text="@string/subtract" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+
+        <Button
+            android:id="@+id/btnNum1"
+            style="@style/buttonNumber"
+            android:text="@string/one" />
+
+        <Button
+            android:id="@+id/btnNum2"
+            style="@style/buttonNumber"
+            android:text="@string/two" />
+
+        <Button
+            android:id="@+id/btnNum3"
+            style="@style/buttonNumber"
+            android:text="@string/three" />
+
+        <Button
+            android:id="@+id/btnOprAdd"
+            style="@style/buttonOperation"
+            android:text="@string/add" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/buttonRow">
+
+        <Button
+            android:id="@+id/btnDot"
+            style="@style/buttonNumber"
+            android:text="@string/dot" />
+
+        <Button
+            android:id="@+id/btnNum0"
+            style="@style/buttonNumber"
+            android:text="@string/zero" />
+
+
+        <Button
+            android:id="@+id/btnEqual"
+            style="@style/buttonNumber"
+            android:layout_weight="2"
+            android:background="@color/orange"
+            android:text="@string/equal"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
+    </LinearLayout>
+
+</LinearLayout>

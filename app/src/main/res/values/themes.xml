@@ -1,0 +1,10 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.Calculator2App" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryVariant">@color/lightBlack</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="fontFamily">@font/orbitron</item>
+    </style>
+
+</resources>
