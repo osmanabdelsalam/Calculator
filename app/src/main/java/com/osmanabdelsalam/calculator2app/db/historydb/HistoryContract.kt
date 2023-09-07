@@ -1,12 +1,8 @@
 package com.osmanabdelsalam.calculator2app.db.historydb
 
-import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.provider.BaseColumns
-import com.osmanabdelsalam.calculator2app.data.History
 
 object HistoryContract {
     private const val SQL_CREATE_HiSTORIES = "CREATE TABLE ${HistoryEntry.TABLE_NAME} (" +

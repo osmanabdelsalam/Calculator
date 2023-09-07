@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -14,35 +13,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.osmanabdelsalam.arithmetic.BadSyntaxException
-import com.osmanabdelsalam.arithmetic.BaseNotFoundException
-import com.osmanabdelsalam.arithmetic.DomainException
-import com.osmanabdelsalam.arithmetic.ExpressionParser
-import com.osmanabdelsalam.arithmetic.ImaginaryException
 import com.osmanabdelsalam.calculator2app.R
 import com.osmanabdelsalam.calculator2app.databinding.ActivityMainBinding
-import com.osmanabdelsalam.calculator2app.db.historydb.HistoryContract
-import com.osmanabdelsalam.calculator2app.repositories.HistoryRepository
 import com.osmanabdelsalam.calculator2app.ui.history.HistoryActivity
-import java.text.DecimalFormat
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: MainActivityViewModel by viewModels()
+
     private lateinit var mBinding: ActivityMainBinding
-    private val numbersPanelString: StringBuilder = StringBuilder("")
-    private val normalOperators = arrayOf(
-        "+",
-        "-",
-        "/",
-        "*"
-    )
 
-    private val expressionParser: ExpressionParser by lazy {
-        ExpressionParser()
-    }
-
-    private val btnNumbers: List<Button> by lazy {
+    private val buttons: List<Button> by lazy {
         listOf(
             mBinding.btnNum0,
             mBinding.btnNum1,
@@ -53,23 +37,14 @@ class MainActivity : AppCompatActivity() {
             mBinding.btnNum6,
             mBinding.btnNum7,
             mBinding.btnNum8,
-            mBinding.btnNum9
-        )
-    }
-
-    private val btnOperators: List<Button> by lazy {
-        listOf(
+            mBinding.btnNum9,
             mBinding.btnOprAdd,
             mBinding.btnOprSubtract,
             mBinding.btnOprMultiply,
-            mBinding.btnOprDivide
+            mBinding.btnOprDivide,
+            mBinding.btnDot
         )
     }
-
-    private val btnDot: Button by lazy {
-        mBinding.btnDot
-    }
-
 
     private val btnBackspace: ImageView by lazy {
         mBinding.btnBackspace
@@ -99,14 +74,12 @@ class MainActivity : AppCompatActivity() {
             return@registerForActivityResult
         }
         val intent = it.data
-        if (intent!!.hasExtra(HistoryActivity.EQUATION_KEY) && intent.hasExtra(HistoryActivity.EQUATION_FOR_DISPLAY_PANEL_KEY)) {
-            numbersPanelString.clear()
-            mainBinding.tvNumbers.text = intent.getStringExtra(HistoryActivity.EQUATION_FOR_DISPLAY_PANEL_KEY)
-            numbersPanelString.append(intent.getStringExtra(HistoryActivity.EQUATION_KEY))
+        if (intent!!.hasExtra(HistoryActivity.EQUATION)) {
+            viewModel.replaceEquationContent(intent.getStringExtra(HistoryActivity.EQUATION) ?: "")
         }
 
-        if(intent.hasExtra(HistoryActivity.EQUATION_RESULT_KEY)) {
-            mainBinding.tvResult.text = intent.getStringExtra(HistoryActivity.EQUATION_RESULT_KEY)
+        if(intent.hasExtra(HistoryActivity.EQUATION_RESULT)) {
+            viewModel.replaceResultContent(intent.getStringExtra(HistoryActivity.EQUATION_RESULT) ?: "")
         }
     }
 
@@ -119,92 +92,53 @@ class MainActivity : AppCompatActivity() {
         tvNumbers.movementMethod = ScrollingMovementMethod()
         tvResult.movementMethod = ScrollingMovementMethod()
 
-        btnNumbers.forEach { btnNumber: Button ->
-            btnNumber.setOnClickListener {
-            if(it is Button) {
-                    val number = it.text!!.toString()
-                    numbersPanelString.append(number)
-                    tvNumbers.append(number)
-                }
-            }
+        viewModel.equation.observe(this) {
+            tvNumbers.text = it
         }
 
-        btnOperators.forEach {btnOperator: Button ->
-            btnOperator.setOnClickListener {
-                if(it is Button) {
-                    val operator = it.text!!.toString()
-                    normalOperators.forEach { operatorView ->
-                        if(numbersPanelString.isNotEmpty() && operatorView == numbersPanelString[numbersPanelString.lastIndex].toString()) {
-                            val tvNumbersValue = tvNumbers.text
-                            tvNumbers.text = tvNumbersValue.substring(0, tvNumbersValue.lastIndex)
-                            numbersPanelString.deleteCharAt(numbersPanelString.lastIndex)
-                        }
-                    }
-                    if(numbersPanelString.isEmpty() && (operator == "x" || operator == "X" || operator == "+" || operator == "/")) return@setOnClickListener
-                    if(operator == "X" || operator == "x") {
-                        numbersPanelString.append("*")
-                    } else {
-                        numbersPanelString.append(operator)
-                    }
-                    tvNumbers.append(operator)
+        viewModel.result.observe(this) {
+            tvResult.text = it
+        }
+
+        buttons.forEach { btnNumber: Button ->
+            btnNumber.setOnClickListener {
+            if(it is Button) {
+                viewModel.appendToEquation(it?.text.toString())
                 }
             }
         }
 
         btnClear.setOnClickListener {
-            tvResult.text = numbersPanelString.clear().toString()
-            tvNumbers.text = numbersPanelString.toString()
+            viewModel.clearEquation()
         }
 
         btnBackspace.apply {
             setOnClickListener {
-                tvResult.text = ""
-                tvNumbers.text = removeLast(tvNumbers.text.toString())
-                try {
-                    numbersPanelString.deleteCharAt(numbersPanelString.lastIndex)
-                } catch (_: Exception) {
-
-                }
+                viewModel.removeLastEquationItem()
             }
 
             setOnLongClickListener {
-                tvResult.text = ""
-                tvNumbers.text =""
-                numbersPanelString.clear()
+                viewModel.clearEquation()
                 true
             }
         }
 
-        btnDot.setOnClickListener {
-            tvNumbers.append(".")
-            numbersPanelString.append(".")
-        }
-
         btnEqual.setOnClickListener {
-            if(numbersPanelString.isNotEmpty()) {
-                try {
-                    val format = DecimalFormat("0.#")
-                    tvResult.text = format.format(expressionParser.evaluate(numbersPanelString.toString()))
-                    val history = HistoryRepository(this)
-                    history.insertEntry("${tvNumbers.text}=${tvResult.text}")
-                } catch (e: BadSyntaxException) {
-                    tvResult.text = getString(R.string.error)
-                } catch (e: DomainException) {
-                    tvResult.text = getString(R.string.error)
-                } catch (e: ImaginaryException) {
-                    tvResult.text = getString(R.string.error)
-                } catch (e: BaseNotFoundException) {
-                    tvResult.text = getString(R.string.error)
-                } catch (e: Exception) {
-                    tvResult.text = getString(R.string.error)
-                }
-            }
+            viewModel.calculateEquation()
         }
 
     }
 
-    private fun removeLast(text: String): String {
-        return if(text.isEmpty()) "" else text.substring(0, text.lastIndex)
+    private fun bindPersistData() {
+        val sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE) ?: return
+        sharedPref.getString(getString(R.string.last_equation_value), "")?.apply {
+            if(isNotEmpty()) {
+                val equation = substring(0, indexOf('='))
+                val result = substring(indexOf('=')+1, lastIndex+1)
+                viewModel.replaceEquationContent(equation)
+                viewModel.replaceResultContent(result)
+            }
+        }
     }
 
     override fun onStart() {
@@ -212,22 +146,16 @@ class MainActivity : AppCompatActivity() {
         bindPersistData()
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        bindPersistData()
-    }
 
     override fun onPause() {
         super.onPause()
-        Log.i("AppLifecycle", "onPause: ")
         val sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE) ?: return
         with(sharedPrefs.edit()) {
-            val stringToPersist = StringBuilder()
-            stringToPersist.append(tvNumbers.text)
-            putString(getString(R.string.last_equation_value), "${tvNumbers.text}=${tvResult.text}")
+            putString(getString(R.string.last_equation_value), "${viewModel.equation.value}=${viewModel.result.value}")
             apply()
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -245,22 +173,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun bindPersistData() {
-        val sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE) ?: return
-        sharedPref.getString(getString(R.string.last_equation_value), "")?.apply {
-            if(isNotEmpty()) {
-                val equation = substring(0, indexOf('='))
-                val result = substring(indexOf('=')+1, lastIndex+1)
-                numbersPanelString.append(equation.replace('X', '*', ignoreCase = true))
-                tvNumbers.text = equation
-                tvResult.text = result
-            }
-        }
-    }
-
     private fun launchHistoryActivity() {
         val intent = Intent(this, HistoryActivity::class.java)
         mGetHistoryActivity.launch(intent)
     }
-
 }

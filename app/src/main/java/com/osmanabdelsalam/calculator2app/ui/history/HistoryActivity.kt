@@ -28,9 +28,8 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EQUATION_KEY = "EQUATION"
-        const val EQUATION_FOR_DISPLAY_PANEL_KEY = "EQUATION_FOR_DISPLAY_PANEL_KEY"
-        const val EQUATION_RESULT_KEY = "EQUATION_RESULT"
+        const val EQUATION = "EQUATION"
+        const val EQUATION_RESULT = "EQUATION_RESULT"
     }
     private lateinit var mBinding: ActivityHistoryBinding
 
@@ -72,9 +71,8 @@ class HistoryActivity : AppCompatActivity() {
                 val selectedItem = adapter.currentList[viewHolder.adapterPosition].text
                 val equation = selectedItem.substring(0, selectedItem.indexOf("="))
                 val result = selectedItem.substring(selectedItem.indexOf("=")+1, selectedItem.lastIndex+1)
-                returnIntent.putExtra(EQUATION_KEY, equation.replace('X', '*', true))
-                returnIntent.putExtra(EQUATION_RESULT_KEY, result)
-                returnIntent.putExtra(EQUATION_FOR_DISPLAY_PANEL_KEY, equation)
+                returnIntent.putExtra(EQUATION_RESULT, result)
+                returnIntent.putExtra(EQUATION, equation)
                 setResult(Activity.RESULT_OK, returnIntent)
                 finish()
             }
