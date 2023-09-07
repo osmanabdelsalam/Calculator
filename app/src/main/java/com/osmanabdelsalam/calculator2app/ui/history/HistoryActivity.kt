@@ -8,20 +8,25 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 
 import androidx.recyclerview.widget.RecyclerView
 import com.osmanabdelsalam.calculator2app.R
-import com.osmanabdelsalam.calculator2app.data.History
 import com.osmanabdelsalam.calculator2app.databinding.ActivityHistoryBinding
-import com.osmanabdelsalam.calculator2app.db.historydb.HistoryContract
 import kotlin.Deprecated
 
 @Suppress("DEPRECATION")
 class HistoryActivity : AppCompatActivity() {
+    private val viewModel: HistoryActivityViewModel by viewModels()
+
     private val rvHistoryList: RecyclerView by lazy {
         mBinding.rvHistoryListItems
     }
+    private val adapter: HistoryRecyclerAdapter by lazy {
+        HistoryRecyclerAdapter()
+    }
+
     companion object {
         const val EQUATION_KEY = "EQUATION"
         const val EQUATION_FOR_DISPLAY_PANEL_KEY = "EQUATION_FOR_DISPLAY_PANEL_KEY"
@@ -29,41 +34,30 @@ class HistoryActivity : AppCompatActivity() {
     }
     private lateinit var mBinding: ActivityHistoryBinding
 
-    private val historyListItems:ArrayList<History> = arrayListOf()
-    private val historyDbHelper: HistoryContract.HistoryDbHelper = HistoryContract.HistoryDbHelper(this)
-
-    private lateinit var adapter: CustomRecyclerViewAdapter
-
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
 
-        adapter = CustomRecyclerViewAdapter(historyListItems)
-        rvHistoryList.adapter = adapter
 
-        historyDbHelper.getHistoryList().forEach {
-            historyListItems.add(it)
+        rvHistoryList.adapter = adapter
+        viewModel.historyList.observe(this) {
+            adapter.submitList(it)
         }
-        adapter.notifyDataSetChanged()
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
+            ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val deletedHistoryItem: History = historyListItems[viewHolder.adapterPosition]
-                val position = viewHolder.adapterPosition
-                historyDbHelper.deleteById(deletedHistoryItem.id)
-                historyListItems.removeAt(position)
-                adapter.notifyItemRemoved(position)
+                viewModel.deleteItem(adapter.currentList[viewHolder.adapterPosition])
+                adapter.notifyItemRemoved(viewHolder.adapterPosition)
             }
+
         }).attachToRecyclerView(rvHistoryList)
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -71,18 +65,13 @@ class HistoryActivity : AppCompatActivity() {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
+            ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val returnIntent = Intent()
-                val selectedItem = historyListItems[viewHolder.adapterPosition].text
-
+                val selectedItem = adapter.currentList[viewHolder.adapterPosition].text
                 val equation = selectedItem.substring(0, selectedItem.indexOf("="))
                 val result = selectedItem.substring(selectedItem.indexOf("=")+1, selectedItem.lastIndex+1)
-
-
                 returnIntent.putExtra(EQUATION_KEY, equation.replace('X', '*', true))
                 returnIntent.putExtra(EQUATION_RESULT_KEY, result)
                 returnIntent.putExtra(EQUATION_FOR_DISPLAY_PANEL_KEY, equation)
@@ -102,8 +91,7 @@ class HistoryActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.clearMenuItem -> {
-                historyDbHelper.clearHistory()
-                historyListItems.clear()
+                viewModel.clearItems()
                 adapter.notifyDataSetChanged()
                 true
             }

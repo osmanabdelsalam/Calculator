@@ -23,6 +23,7 @@ import com.osmanabdelsalam.arithmetic.ImaginaryException
 import com.osmanabdelsalam.calculator2app.R
 import com.osmanabdelsalam.calculator2app.databinding.ActivityMainBinding
 import com.osmanabdelsalam.calculator2app.db.historydb.HistoryContract
+import com.osmanabdelsalam.calculator2app.repositories.HistoryRepository
 import com.osmanabdelsalam.calculator2app.ui.history.HistoryActivity
 import java.text.DecimalFormat
 
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val format = DecimalFormat("0.#")
                     tvResult.text = format.format(expressionParser.evaluate(numbersPanelString.toString()))
-                    val history = HistoryContract.HistoryDbHelper(this)
+                    val history = HistoryRepository(this)
                     history.insertEntry("${tvNumbers.text}=${tvResult.text}")
                 } catch (e: BadSyntaxException) {
                     tvResult.text = getString(R.string.error)
