@@ -1,4 +1,4 @@
-package com.osmanabdelsalam.calculator2app.arithmetic
+package com.osmanabdelsalam.arithmetic
 
 class BadSyntaxException(msg: String = "Bad Syntax") : Exception(msg)
 

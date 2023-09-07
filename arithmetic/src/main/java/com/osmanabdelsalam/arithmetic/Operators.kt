@@ -1,4 +1,4 @@
-package com.osmanabdelsalam.calculator2app.arithmetic
+package com.osmanabdelsalam.arithmetic
 
 enum class NormalOperators(val sign: String, val precedence: Int) {
     PLUS("+", 2),

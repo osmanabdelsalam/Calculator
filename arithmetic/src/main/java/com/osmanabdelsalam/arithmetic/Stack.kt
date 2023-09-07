@@ -1,4 +1,4 @@
-package com.osmanabdelsalam.calculator2app.arithmetic
+package com.osmanabdelsalam.arithmetic
 
 class Stack<T> {
     private val stack = arrayListOf<T>()

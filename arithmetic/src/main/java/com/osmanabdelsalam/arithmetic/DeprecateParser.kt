@@ -1,6 +1,22 @@
-package com.osmanabdelsalam.calculator2app.arithmetic
+package com.osmanabdelsalam.arithmetic
 
-import kotlin.math.*
+import kotlin.math.E
+import kotlin.math.PI
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.cosh
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.round
+import kotlin.math.sin
+import kotlin.math.sinh
+import kotlin.math.sqrt
+import kotlin.math.tan
+import kotlin.math.tanh
 
 class DeprecateParser {
 
